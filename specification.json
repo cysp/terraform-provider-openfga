@@ -1,0 +1,18 @@
+{
+    "version": "0.1",
+    "provider": {
+        "name": "openfga",
+        "schema": {
+            "attributes": [
+                {
+                    "name": "api_url",
+                    "string": {
+                        "optional_required": "required"
+                    }
+                }
+            ]
+        }
+    },
+    "resources": [],
+    "datasources": []
+}
