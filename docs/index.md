@@ -24,3 +24,7 @@ provider "openfga" {
 ### Required
 
 - `api_url` (String)
+
+### Optional
+
+- `api_token` (String)

@@ -12,6 +12,9 @@ import (
 func OpenfgaProviderSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Attributes: map[string]schema.Attribute{
+			"api_token": schema.StringAttribute{
+				Optional: true,
+			},
 			"api_url": schema.StringAttribute{
 				Required: true,
 			},
@@ -20,5 +23,6 @@ func OpenfgaProviderSchema(ctx context.Context) schema.Schema {
 }
 
 type OpenfgaModel struct {
-	ApiUrl types.String `tfsdk:"api_url"`
+	ApiToken types.String `tfsdk:"api_token"`
+	ApiUrl   types.String `tfsdk:"api_url"`
 }

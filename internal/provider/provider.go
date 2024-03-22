@@ -8,6 +8,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
+	openfgaCredentials "github.com/openfga/go-sdk/credentials"
+
 	"github.com/cysp/terraform-provider-openfga/internal/provider/provider_openfga"
 )
 
@@ -56,6 +58,31 @@ func (p *OpenfgaProvider) Configure(ctx context.Context, req provider.ConfigureR
 		resp.Diagnostics.AddError("Error configuring client", "No API URL provided")
 		return
 	}
+
+	var apiToken string
+	if !data.ApiToken.IsNull() {
+		apiToken = data.ApiToken.ValueString()
+	} else {
+		apiToken = os.Getenv("OPENFGA_API_TOKEN")
+	}
+
+	credentials := openfgaCredentials.Credentials{
+		Method: openfgaCredentials.CredentialsMethodNone,
+	}
+
+	if apiToken != "" {
+		credentials = openfgaCredentials.Credentials{
+			Method: openfgaCredentials.CredentialsMethodApiToken,
+			Config: &openfgaCredentials.Config{
+				ApiToken: apiToken,
+			},
+		}
+	}
+
+	var clientCache = NewOpenfgaClientCache(apiUrl, credentials)
+
+	resp.DataSourceData = OpenfgaProviderData{clientCache}
+	resp.ResourceData = OpenfgaProviderData{clientCache}
 }
 
 func (p *OpenfgaProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -68,5 +95,9 @@ func (p *OpenfgaProvider) DataSources(ctx context.Context) []func() datasource.D
 }
 
 func (p *OpenfgaProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewStoreResource,
+		NewTupleResource,
+		NewAuthorizationModelResource,
+	}
 }

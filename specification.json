@@ -9,10 +9,221 @@
                     "string": {
                         "optional_required": "required"
                     }
+                },
+                {
+                    "name": "api_token",
+                    "string": {
+                        "optional_required": "optional"
+                    }
                 }
             ]
         }
     },
-    "resources": [],
-    "datasources": []
+    "resources": [
+        {
+            "name": "store",
+            "schema": {
+                "attributes": [
+                    {
+                        "name": "id",
+                        "string": {
+                            "computed_optional_required": "computed"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "string": {
+                            "computed_optional_required": "required",
+                            "plan_modifiers": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+                                            }
+                                        ],
+                                        "schema_definition": "stringplanmodifier.RequiresReplace()"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "authorization_model",
+            "schema": {
+                "attributes": [
+                    {
+                        "name": "store_id",
+                        "string": {
+                            "computed_optional_required": "required"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "string": {
+                            "computed_optional_required": "computed"
+                        }
+                    },
+                    {
+                        "name": "model_json",
+                        "string": {
+                            "computed_optional_required": "required",
+                            "custom_type": {
+                                "import": {
+                                    "path": "github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+                                },
+                                "type": "jsontypes.NormalizedType{}",
+                                "value_type": "jsontypes.Normalized"
+                            },
+                            "plan_modifiers": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+                                            }
+                                        ],
+                                        "schema_definition": "stringplanmodifier.RequiresReplace()"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "assertions",
+                        "list_nested": {
+                            "computed_optional_required": "optional",
+                            "nested_object": {
+                                "attributes": [
+                                    {
+                                        "name": "tuple_key",
+                                        "single_nested": {
+                                            "computed_optional_required": "required",
+                                            "attributes": [
+                                                {
+                                                    "name": "object",
+                                                    "string": {
+                                                        "computed_optional_required": "required"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "relation",
+                                                    "string": {
+                                                        "computed_optional_required": "required"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "user",
+                                                    "string": {
+                                                        "computed_optional_required": "required"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "expectation",
+                                        "bool": {
+                                            "computed_optional_required": "required"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "tuple",
+            "schema": {
+                "attributes": [
+                    {
+                        "name": "store_id",
+                        "string": {
+                            "computed_optional_required": "required"
+                        }
+                    },
+                    {
+                        "name": "user",
+                        "string": {
+                            "computed_optional_required": "optional",
+                            "plan_modifiers": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+                                            }
+                                        ],
+                                        "schema_definition": "stringplanmodifier.RequiresReplace()"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "string": {
+                            "computed_optional_required": "optional",
+                            "plan_modifiers": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+                                            }
+                                        ],
+                                        "schema_definition": "stringplanmodifier.RequiresReplace()"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "object",
+                        "string": {
+                            "computed_optional_required": "optional",
+                            "plan_modifiers": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+                                            }
+                                        ],
+                                        "schema_definition": "stringplanmodifier.RequiresReplace()"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "datasources": [
+        {
+            "name": "store",
+            "schema": {
+                "attributes": [
+                    {
+                        "name": "id",
+                        "string": {
+                            "computed_optional_required": "required"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "string": {
+                            "computed_optional_required": "computed"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
 }
