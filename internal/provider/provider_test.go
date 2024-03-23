@@ -10,6 +10,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )
 
+var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
+	"openfga": providerserver.NewProtocol6WithError(New("test")()),
+}
+
 func TestProtocol6ProviderServerSchemaVersion(t *testing.T) {
 	p := New("test")()
 
