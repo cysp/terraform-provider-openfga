@@ -56,6 +56,11 @@ func (p *OpenfgaProvider) Configure(ctx context.Context, req provider.ConfigureR
 		resp.Diagnostics.AddError("Error configuring client", "No API URL provided")
 		return
 	}
+
+	var clientCache = NewOpenfgaClientCache(apiUrl)
+
+	resp.DataSourceData = OpenfgaProviderData{clientCache}
+	resp.ResourceData = OpenfgaProviderData{clientCache}
 }
 
 func (p *OpenfgaProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -64,9 +69,13 @@ func (p *OpenfgaProvider) Metadata(ctx context.Context, req provider.MetadataReq
 }
 
 func (p *OpenfgaProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewStoreDataSource,
+	}
 }
 
 func (p *OpenfgaProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewStoreResource,
+	}
 }
