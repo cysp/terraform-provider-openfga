@@ -7,7 +7,7 @@
                 {
                     "name": "api_url",
                     "string": {
-                        "optional_required": "required"
+                        "optional_required": "optional"
                     }
                 },
                 {

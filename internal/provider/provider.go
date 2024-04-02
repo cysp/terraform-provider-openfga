@@ -91,7 +91,9 @@ func (p *OpenfgaProvider) Metadata(ctx context.Context, req provider.MetadataReq
 }
 
 func (p *OpenfgaProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewStoreDataSource,
+	}
 }
 
 func (p *OpenfgaProvider) Resources(ctx context.Context) []func() resource.Resource {

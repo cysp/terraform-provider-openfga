@@ -3,52 +3,58 @@ package provider
 import (
 	"context"
 
+	"github.com/cysp/terraform-provider-openfga/internal/provider/datasource_store"
+	"github.com/cysp/terraform-provider-openfga/internal/provider/util"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 var _ datasource.DataSource = (*storeDataSource)(nil)
+var _ datasource.DataSourceWithConfigure = (*storeDataSource)(nil)
 
 func NewStoreDataSource() datasource.DataSource {
 	return &storeDataSource{}
 }
 
-type storeDataSource struct{}
-
-type storeDataSourceModel struct {
-	Id types.String `tfsdk:"id"`
+type storeDataSource struct {
+	providerData OpenfgaProviderData
 }
 
 func (d *storeDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_store"
 }
 
+func (d *storeDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	util.ProviderDataFromDataSourceConfigureRequest(req, &d.providerData, resp)
+}
+
 func (d *storeDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	resp.Schema = schema.Schema{
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed: true,
-			},
-		},
-	}
+	resp.Schema = datasource_store.StoreDataSourceSchema(ctx)
+	resp.Schema.Description = "The store data source is used to read OpenFGA stores."
 }
 
 func (d *storeDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data storeDataSourceModel
+	var data datasource_store.StoreModel
 
-	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Read API call logic
+	client, err := d.providerData.GetClientForStore(data.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Error getting client", err.Error())
+		return
+	}
 
-	// Example data value setting
-	data.Id = types.StringValue("example-id")
+	getStoreResponse, err := client.GetStore(ctx).Execute()
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading store", err.Error())
+		return
+	}
 
-	// Save data into Terraform state
+	data.Id = types.StringValue(getStoreResponse.Id)
+	data.Name = types.StringValue(getStoreResponse.Name)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

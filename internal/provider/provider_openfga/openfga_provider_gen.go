@@ -16,7 +16,7 @@ func OpenfgaProviderSchema(ctx context.Context) schema.Schema {
 				Optional: true,
 			},
 			"api_url": schema.StringAttribute{
-				Required: true,
+				Optional: true,
 			},
 		},
 	}

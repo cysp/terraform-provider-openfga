@@ -7,11 +7,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	openfgaClient "github.com/openfga/go-sdk/client"
-
 	"github.com/cysp/terraform-provider-openfga/internal/provider/resource_store"
-
 	"github.com/cysp/terraform-provider-openfga/internal/provider/util"
+
+	openfgaClient "github.com/openfga/go-sdk/client"
 )
 
 var _ resource.Resource = (*storeResource)(nil)
@@ -36,6 +35,7 @@ func (r *storeResource) Configure(ctx context.Context, req resource.ConfigureReq
 
 func (r *storeResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = resource_store.StoreResourceSchema(ctx)
+	resp.Schema.Description = "The store resource is used to manage OpenFGA stores."
 }
 
 func (r *storeResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -45,9 +45,7 @@ func (r *storeResource) ImportState(ctx context.Context, req resource.ImportStat
 func (r *storeResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data resource_store.StoreModel
 
-	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -64,20 +62,16 @@ func (r *storeResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	// Set data from API response
 	data.Id = types.StringValue(createStoreResponse.Id)
 	data.Name = types.StringValue(createStoreResponse.Name)
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
 func (r *storeResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data resource_store.StoreModel
 
-	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -94,36 +88,35 @@ func (r *storeResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	// Set data from API response
 	data.Id = types.StringValue(getStoreResponse.Id)
 	data.Name = types.StringValue(getStoreResponse.Name)
 
-	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
 func (r *storeResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var data resource_store.StoreModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
 	resp.Diagnostics.AddError("Cannot update store", "")
 }
 
 func (r *storeResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var data resource_store.StoreModel
 
-	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Delete API call logic
+	client, err := r.providerData.GetClientForStore(data.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Error getting client", err.Error())
+		return
+	}
+
+	deleteStoreResponse, err := client.DeleteStore(ctx).Execute()
+	if err != nil {
+		resp.Diagnostics.AddError("Error deleting store", err.Error())
+		return
+	}
+
+	_ = deleteStoreResponse
 }
