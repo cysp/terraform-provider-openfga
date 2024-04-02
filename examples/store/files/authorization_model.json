@@ -1,0 +1,75 @@
+{
+    "schema_version": "1.1",
+    "type_definitions": [
+        {
+            "type": "user"
+        },
+        {
+            "metadata": {
+                "relations": {
+                    "assignee": {
+                        "directly_related_user_types": [
+                            {
+                                "type": "user"
+                            }
+                        ]
+                    }
+                }
+            },
+            "relations": {
+                "assignee": {
+                    "this": {}
+                }
+            },
+            "type": "role"
+        },
+        {
+            "metadata": {
+                "relations": {
+                    "editor": {
+                        "directly_related_user_types": [
+                            {
+                                "type": "user"
+                            },
+                            {
+                                "relation": "assignee",
+                                "type": "role"
+                            }
+                        ]
+                    },
+                    "viewer": {
+                        "directly_related_user_types": [
+                            {
+                                "type": "user"
+                            },
+                            {
+                                "relation": "assignee",
+                                "type": "role"
+                            }
+                        ]
+                    }
+                }
+            },
+            "relations": {
+                "editor": {
+                    "this": {}
+                },
+                "viewer": {
+                    "union": {
+                        "child": [
+                            {
+                                "this": {}
+                            },
+                            {
+                                "computedUserset": {
+                                    "relation": "editor"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "type": "campaign"
+        }
+    ]
+}
