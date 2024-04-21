@@ -50,6 +50,7 @@ jobs:
         terraform:
           - "1.6.*"
           - "1.7.*"
+          - "1.8.*"
     services:
       openfga:
         image: ghcr.io/cysp/github-actions-service-openfga-run:v1.5.1
