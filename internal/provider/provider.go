@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
@@ -12,6 +13,7 @@ import (
 )
 
 var _ provider.Provider = (*OpenfgaProvider)(nil)
+var _ provider.ProviderWithFunctions = (*OpenfgaProvider)(nil)
 
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
@@ -77,5 +79,13 @@ func (p *OpenfgaProvider) DataSources(ctx context.Context) []func() datasource.D
 func (p *OpenfgaProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewStoreResource,
+	}
+}
+
+func (p *OpenfgaProvider) Functions(_ context.Context) []func() function.Function {
+	return []func() function.Function{
+		func() function.Function {
+			return &TransformModelToJsonFunction{}
+		},
 	}
 }
