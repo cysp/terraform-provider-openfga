@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/terraform-plugin-framework v1.8.0
 	github.com/hashicorp/terraform-plugin-go v0.23.0
 	github.com/hashicorp/terraform-plugin-testing v1.7.0
-	github.com/openfga/go-sdk v0.3.6
+	github.com/openfga/go-sdk v0.3.7
 	github.com/stretchr/testify v1.9.0
 )
 
