@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
 	"github.com/cysp/terraform-provider-openfga/internal/provider/provider_openfga"
+
+	openfgaClient "github.com/openfga/go-sdk/client"
 )
 
 var _ provider.Provider = (*OpenfgaProvider)(nil)
@@ -57,10 +59,16 @@ func (p *OpenfgaProvider) Configure(ctx context.Context, req provider.ConfigureR
 		return
 	}
 
-	var clientCache = NewOpenfgaClientCache(apiUrl)
+	client, err := openfgaClient.NewSdkClient(&openfgaClient.ClientConfiguration{
+		ApiUrl: apiUrl,
+	})
+	if err != nil {
+		resp.Diagnostics.AddError("Error configuring client", err.Error())
+		return
+	}
 
-	resp.DataSourceData = OpenfgaProviderData{clientCache}
-	resp.ResourceData = OpenfgaProviderData{clientCache}
+	resp.DataSourceData = OpenfgaProviderData{client}
+	resp.ResourceData = OpenfgaProviderData{client}
 }
 
 func (p *OpenfgaProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {

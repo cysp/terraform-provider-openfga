@@ -50,13 +50,7 @@ func (r *storeResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	client, err := r.providerData.GetGlobalClient()
-	if err != nil {
-		resp.Diagnostics.AddError("Error getting client", err.Error())
-		return
-	}
-
-	createStoreResponse, err := client.CreateStore(ctx).Body(openfgaClient.ClientCreateStoreRequest{Name: data.Name.ValueString()}).Execute()
+	createStoreResponse, err := r.providerData.client.CreateStore(ctx).Body(openfgaClient.ClientCreateStoreRequest{Name: data.Name.ValueString()}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating store", err.Error())
 		return
@@ -76,13 +70,9 @@ func (r *storeResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	client, err := r.providerData.GetClientForStore(data.Id.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError("Error getting client", err.Error())
-		return
-	}
-
-	getStoreResponse, err := client.GetStore(ctx).Execute()
+	getStoreResponse, err := r.providerData.client.GetStore(ctx).Options(openfgaClient.ClientGetStoreOptions{
+		StoreId: data.Id.ValueStringPointer(),
+	}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading store", err.Error())
 		return
@@ -106,13 +96,9 @@ func (r *storeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 		return
 	}
 
-	client, err := r.providerData.GetClientForStore(data.Id.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError("Error getting client", err.Error())
-		return
-	}
-
-	deleteStoreResponse, err := client.DeleteStore(ctx).Execute()
+	deleteStoreResponse, err := r.providerData.client.DeleteStore(ctx).Options(openfgaClient.ClientDeleteStoreOptions{
+		StoreId: data.Id.ValueStringPointer(),
+	}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError("Error deleting store", err.Error())
 		return

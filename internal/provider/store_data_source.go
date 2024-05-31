@@ -7,6 +7,8 @@ import (
 	"github.com/cysp/terraform-provider-openfga/internal/provider/util"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	openfgaClient "github.com/openfga/go-sdk/client"
 )
 
 var _ datasource.DataSource = (*storeDataSource)(nil)
@@ -41,13 +43,9 @@ func (d *storeDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	client, err := d.providerData.GetClientForStore(data.Id.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError("Error getting client", err.Error())
-		return
-	}
-
-	getStoreResponse, err := client.GetStore(ctx).Execute()
+	getStoreResponse, err := d.providerData.client.GetStore(ctx).Options(openfgaClient.ClientGetStoreOptions{
+		StoreId: data.Id.ValueStringPointer(),
+	}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading store", err.Error())
 		return
