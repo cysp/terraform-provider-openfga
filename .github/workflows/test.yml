@@ -38,7 +38,7 @@ jobs:
           go-version-file: "go.mod"
           cache: true
       - run: go mod download
-      - run: go test -v -cover ./...
+      - run: go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... ./...
         timeout-minutes: 10
 
   testacc:
@@ -67,8 +67,8 @@ jobs:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
       - run: go mod download
-      - env:
+      - run: go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... ./internal/provider/
+        env:
           TF_ACC: "1"
           FGA_API_URL: "http://localhost:${{ job.services.openfga.ports[8080] }}"
-        run: go test -v -cover ./internal/provider/
         timeout-minutes: 10
