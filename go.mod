@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/hashicorp/terraform-plugin-codegen-framework v0.4.0
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
-	github.com/hashicorp/terraform-plugin-framework v1.10.0
+	github.com/hashicorp/terraform-plugin-framework v1.11.0
 	github.com/hashicorp/terraform-plugin-go v0.23.0
 	github.com/hashicorp/terraform-plugin-testing v1.9.0
 	github.com/openfga/go-sdk v0.5.0
